@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">photo-resize-zmp3.zmdcdn.me</domain>
+        <domain includeSubdomains="true">mp3.zing.vn</domain>
+        <domain includeSubdomains="true">zingmp3.vn</domain>
+    </domain-config>
+</network-security-config> 
