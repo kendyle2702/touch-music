@@ -6,70 +6,98 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundColor">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/searchCardView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:hint="Search for songs"
-        android:textColorHint="@color/textSecondary"
-        app:boxStrokeColor="@color/colorAccent"
-        app:hintTextColor="@color/colorAccent"
-        app:endIconMode="clear_text"
-        app:endIconTint="@color/colorAccent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="@color/cardBackground"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etSearch"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            android:textColor="@color/textPrimary"
-            android:maxLines="1"
-            android:focusable="true"
-            android:focusableInTouchMode="true" />
+            android:paddingHorizontal="8dp">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <ImageView
+                android:id="@+id/imgSearch"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:src="@android:drawable/ic_menu_search"
+                app:layout_constraintBottom_toBottomOf="@+id/editSearch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/editSearch"
+                app:tint="@color/colorAccent" />
+
+            <EditText
+                android:id="@+id/editSearch"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="@android:color/transparent"
+                android:hint="Search for songs..."
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="@color/textPrimary"
+                android:textColorHint="@color/textDisabled"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imgSearch"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:clipToPadding="false"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="16dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/searchCardView"
         tools:listitem="@layout/item_song" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:indeterminateTint="@color/colorAccent"
+    <TextView
+        android:id="@+id/tvNoResults"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:gravity="center"
+        android:text="No results found.\nTry a different search."
+        android:textAppearance="@style/TextAppearance.App.HeadlineMedium"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/searchCardView" />
 
-    <TextView
-        android:id="@+id/tvEmpty"
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Search for songs"
-        android:textColor="@color/textSecondary"
-        android:textSize="16sp"
-        android:visibility="visible"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorColor="@color/colorAccent"
+        app:indicatorSize="48dp"
+        app:trackColor="@color/seekBarBackground"
+        app:trackThickness="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/searchCardView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout> 

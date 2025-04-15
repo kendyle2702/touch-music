@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -31,6 +30,7 @@ import com.example.waterremindervn.fragment.Top100Fragment;
 import com.example.waterremindervn.model.Song;
 import com.example.waterremindervn.repository.MusicRepository;
 import com.example.waterremindervn.service.MusicPlayerService;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -54,8 +54,8 @@ public class MainActivity extends AppCompatActivity implements
     private TextView tvSongTitle;
     private TextView tvArtist;
     private SeekBar seekBarProgress;
-    private ImageButton btnPlayPause;
-    private ImageButton btnNext;
+    private MaterialButton btnPlayPause;
+    private MaterialButton btnNext;
     
     // Service connection
     private MusicPlayerService musicService;
@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements
     }
     
     private void updatePlayPauseButton(boolean isPlaying) {
-        btnPlayPause.setImageResource(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
+        btnPlayPause.setIconResource(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
         
         // Xoay ảnh đĩa khi đang phát, dừng xoay khi tạm dừng
         if (isPlaying) {

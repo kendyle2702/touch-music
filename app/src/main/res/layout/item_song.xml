@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp"
+    app:rippleColor="@color/rippleColor"
+    app:strokeWidth="0.5dp"
+    app:strokeColor="@color/colorPrimaryLight"
+    android:clickable="true"
+    android:focusable="true"
     app:cardBackgroundColor="@color/cardBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,71 +24,93 @@
 
         <TextView
             android:id="@+id/tvRank"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/circle_background"
             android:gravity="center"
             android:text="1"
-            android:textColor="@color/colorAccent"
-            android:textSize="14sp"
+            android:textAppearance="@style/TextAppearance.App.LabelLarge"
+            android:textColor="@color/textOnAccent"
+            android:textSize="12sp"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imgSongCover"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/imgContainer"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_marginStart="8dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_music_note"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/colorPrimaryLight"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvRank"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+            
+            <ImageView
+                android:id="@+id/imgSongCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_music_note"
+                android:contentDescription="Song cover image" />
+        </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/tvSongTitle"
+        <LinearLayout
+            android:id="@+id/textContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Song Title"
-            android:textColor="@color/textPrimary"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@+id/imgContainer"
             app:layout_constraintEnd_toStartOf="@+id/btnFavorite"
-            app:layout_constraintStart_toEndOf="@+id/imgSongCover"
-            app:layout_constraintTop_toTopOf="@+id/imgSongCover" />
+            app:layout_constraintStart_toEndOf="@+id/imgContainer"
+            app:layout_constraintTop_toTopOf="@+id/imgContainer">
 
-        <TextView
-            android:id="@+id/tvArtist"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="Artist"
-            android:textColor="@color/textSecondary"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imgSongCover"
-            app:layout_constraintEnd_toStartOf="@+id/btnFavorite"
-            app:layout_constraintStart_toEndOf="@+id/imgSongCover"
-            app:layout_constraintTop_toBottomOf="@+id/tvSongTitle" />
+            <TextView
+                android:id="@+id/tvSongTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Song Title"
+                android:textAppearance="@style/TextAppearance.App.BodyLarge"
+                android:textStyle="bold" />
 
-        <ImageButton
+            <TextView
+                android:id="@+id/tvArtist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Artist"
+                android:textAppearance="@style/TextAppearance.App.BodyMedium" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnFavorite"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_favorite_border"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            app:icon="@drawable/ic_favorite_border"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="24dp"
+            app:iconTint="@color/colorAccent"
+            app:cornerRadius="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/colorAccent" />
+            style="@style/Widget.Material3.Button.IconButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView> 
+</com.google.android.material.card.MaterialCardView> 

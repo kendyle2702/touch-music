@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.waterremindervn.R;
 import com.example.waterremindervn.adapter.SongAdapter;
@@ -30,7 +31,8 @@ import java.util.List;
 public class MyListFragment extends Fragment implements SongAdapter.OnSongClickListener {
     
     private RecyclerView recyclerView;
-    private TextView tvEmpty;
+    private TextView tvEmptyList;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private SongAdapter adapter;
     private MusicRepository repository;
     private OnSongActionListener listener;
@@ -61,7 +63,8 @@ public class MyListFragment extends Fragment implements SongAdapter.OnSongClickL
         super.onViewCreated(view, savedInstanceState);
         
         recyclerView = view.findViewById(R.id.recyclerView);
-        tvEmpty = view.findViewById(R.id.tvEmpty);
+        tvEmptyList = view.findViewById(R.id.tvEmptyList);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         
         repository = new MusicRepository(requireContext());
         adapter = new SongAdapter(this, false);
@@ -71,6 +74,11 @@ public class MyListFragment extends Fragment implements SongAdapter.OnSongClickL
         
         // Thiết lập swipe-to-delete
         setupSwipeToDelete();
+        
+        // Thiết lập pull-to-refresh
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            repository.refreshFavoriteSongs();
+        });
         
         observeFavoriteSongs();
     }
@@ -133,11 +141,16 @@ public class MyListFragment extends Fragment implements SongAdapter.OnSongClickL
             adapter.submitList(songs);
             
             if (songs.isEmpty()) {
-                tvEmpty.setVisibility(View.VISIBLE);
+                tvEmptyList.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
             } else {
-                tvEmpty.setVisibility(View.GONE);
+                tvEmptyList.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
+            }
+            
+            // Kết thúc trạng thái refreshing nếu đang active
+            if (swipeRefreshLayout.isRefreshing()) {
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
     }

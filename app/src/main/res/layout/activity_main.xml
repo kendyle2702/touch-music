@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -12,24 +12,26 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:backgroundTint="@color/colorPrimary"
+        app:liftOnScroll="true"
+        app:elevation="4dp">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorPrimary"
+            android:background="@android:color/transparent"
+            app:titleTextAppearance="@style/TextAppearance.App.HeadlineMedium"
             app:title="TouchMusic"
+            app:menu="@menu/top_app_bar"
+            app:titleCentered="false"
             app:titleTextColor="@color/textPrimary" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:background="@android:color/transparent"
             app:tabGravity="fill"
             app:tabMode="fixed"
             app:tabTextColor="@color/tabUnselected"
@@ -57,21 +59,29 @@
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/backgroundColor"
-        app:layout_constraintBottom_toTopOf="@+id/playerControlLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <include
-        android:id="@+id/playerControlLayout"
-        layout="@layout/player_control"
+    <!-- Player control with elevation and rounded corners -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/playerControlContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_gravity="bottom"
+        app:cardBackgroundColor="@color/playerControlBackground"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp">
+        
+        <include
+            android:id="@+id/playerControlLayout"
+            layout="@layout/player_control"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </androidx.cardview.widget.CardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout> 
+</androidx.coordinatorlayout.widget.CoordinatorLayout> 

@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +21,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.waterremindervn.R;
 import com.example.waterremindervn.model.Song;
+import com.google.android.material.button.MaterialButton;
 
 public class SongAdapter extends ListAdapter<Song, SongAdapter.SongViewHolder> {
 
@@ -57,7 +57,7 @@ public class SongAdapter extends ListAdapter<Song, SongAdapter.SongViewHolder> {
         private final TextView tvSongTitle;
         private final TextView tvArtist;
         private final ImageView imgSongCover;
-        private final ImageButton btnFavorite;
+        private final MaterialButton btnFavorite;
         private final TextView tvRank;
 
         SongViewHolder(@NonNull View itemView) {
@@ -119,7 +119,7 @@ public class SongAdapter extends ListAdapter<Song, SongAdapter.SongViewHolder> {
                     .into(imgSongCover);
             
             // Set favorite icon
-            btnFavorite.setImageResource(song.isFavorite() ? 
+            btnFavorite.setIconResource(song.isFavorite() ? 
                     R.drawable.ic_favorite_filled : 
                     R.drawable.ic_favorite_border);
             

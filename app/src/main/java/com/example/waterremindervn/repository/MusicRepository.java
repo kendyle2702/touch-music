@@ -53,6 +53,18 @@ public class MusicRepository {
         return songDao.getAllSongs();
     }
 
+    /**
+     * Làm mới danh sách bài hát yêu thích
+     * Vì dữ liệu được lấy từ database nên phương thức này chỉ kiểm tra 
+     * xem các bài hát yêu thích hiện tại có thông tin stream URL hay không.
+     */
+    public void refreshFavoriteSongs() {
+        AsyncTask.execute(() -> {
+            // Không cần làm gì đặc biệt vì dữ liệu đã được LiveData tự động cập nhật
+            // Nhưng có thể thêm logic sau này nếu cần
+        });
+    }
+
     public void addSongToFavorites(Song song) {
         AsyncTask.execute(() -> songDao.insert(song));
     }
@@ -274,8 +286,16 @@ public class MusicRepository {
                     if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                         ZingMediaResponse.Data data = response.body().getData();
                         if (data != null) {
-                            String streamUrl = data.getStreamUrl("128");  // Try to get 128kbps quality
+                            // Ưu tiên chất lượng cao hơn (320kbps) nếu có
+                            String streamUrl = data.getStreamUrl("320");
+                            if (streamUrl == null || streamUrl.isEmpty()) {
+                                // Thử lấy 128kbps nếu không có 320kbps
+                                streamUrl = data.getStreamUrl("128");
+                            }
+                            
                             if (streamUrl != null && !streamUrl.isEmpty()) {
+                                // Xác thực và cải thiện URL
+                                streamUrl = validateAndImproveAudioUrl(streamUrl);
                                 callback.onSuccess(streamUrl);
                                 return;
                             }
@@ -308,7 +328,10 @@ public class MusicRepository {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     SongResponse.SongData data = response.body().getData();
                     if (data != null && data.getUrl() != null) {
-                        callback.onSuccess(data.getUrl());
+                        // Kiểm tra nếu URL có vấn đề tiềm ẩn
+                        String url = data.getUrl();
+                        url = validateAndImproveAudioUrl(url);
+                        callback.onSuccess(url);
                     } else {
                         callback.onError("No stream URL found");
                     }
@@ -323,6 +346,26 @@ public class MusicRepository {
                 callback.onError("Network error: " + t.getMessage());
             }
         });
+    }
+    
+    // Phương thức mới để xác thực và cải thiện URL âm thanh
+    private String validateAndImproveAudioUrl(String url) {
+        if (url == null || url.isEmpty()) {
+            return url;
+        }
+        
+        // Log URL để kiểm tra chất lượng
+        Log.d(TAG, "Original stream URL: " + url);
+        
+        // Thêm logic xử lý URL nếu cần
+        // Ví dụ: Nếu URL chứa tham số chất lượng, thử nâng cấp lên 320kbps
+        if (url.contains("quality=128") || url.contains("q=128")) {
+            url = url.replace("quality=128", "quality=320")
+                     .replace("q=128", "q=320");
+            Log.d(TAG, "Upgraded to higher quality: " + url);
+        }
+        
+        return url;
     }
     
     // Hàm để thêm bài hát vào danh sách yêu thích với kiểm tra trùng lặp

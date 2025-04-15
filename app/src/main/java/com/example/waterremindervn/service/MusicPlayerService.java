@@ -18,6 +18,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.DefaultLoadControl;
+import androidx.media3.common.C;
+import androidx.media3.exoplayer.DefaultRenderersFactory;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -58,7 +61,35 @@ public class MusicPlayerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        player = new ExoPlayer.Builder(this).build();
+        
+        // Cấu hình nâng cao cho LoadControl để tăng kích thước bộ đệm
+        DefaultLoadControl loadControl = new DefaultLoadControl.Builder()
+                .setBufferDurationsMs(
+                        DefaultLoadControl.DEFAULT_MIN_BUFFER_MS, // Giữ nguyên giá trị mặc định cho minBufferMs
+                        DefaultLoadControl.DEFAULT_MAX_BUFFER_MS * 2, // Tăng gấp đôi kích thước bộ đệm tối đa
+                        DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS * 2, // Tăng gấp đôi bộ đệm trước khi phát
+                        DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS * 2) // Tăng gấp đôi bộ đệm sau khi rebuffer
+                .setPrioritizeTimeOverSizeThresholds(true) // Ưu tiên thời gian phát hơn kích thước bộ đệm
+                .build();
+                
+        // Tạo renderersFactory với cấu hình âm thanh nâng cao
+        DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(this)
+                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER);
+        
+        // Khởi tạo ExoPlayer với cấu hình nâng cao
+        player = new ExoPlayer.Builder(this)
+                .setLoadControl(loadControl)
+                .setRenderersFactory(renderersFactory)
+                .build();
+                
+        // Tăng âm thanh buffer để giảm thiểu vấn đề âm thanh bị rè
+        player.setAudioAttributes(
+                new androidx.media3.common.AudioAttributes.Builder()
+                        .setUsage(C.USAGE_MEDIA)
+                        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                        .build(),
+                /* handleAudioFocus= */ true);
+        
         repository = new MusicRepository(this);
         
         createNotificationChannel();
@@ -217,13 +248,33 @@ public class MusicPlayerService extends Service {
                 // Update song with streaming URL
                 song.setPath(url);
                 
-                // Prepare and play
-                MediaItem mediaItem = MediaItem.fromUri(url);
-                player.setMediaItem(mediaItem);
-                player.prepare();
-                player.play();
-                
-                updateCallbacks();
+                try {
+                    // Chuẩn bị và phát với ưu tiên chất lượng âm thanh
+                    MediaItem mediaItem = MediaItem.fromUri(url);
+                    player.setMediaItem(mediaItem);
+                    player.setPlaybackSpeed(1.0f); // Đặt tốc độ phát về chuẩn để tránh vấn đề âm thanh
+                    
+                    // Tăng độ ưu tiên của luồng để cải thiện chất lượng âm thanh
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        android.media.AudioAttributes audioAttributes = 
+                            new android.media.AudioAttributes.Builder()
+                                .setUsage(android.media.AudioAttributes.USAGE_MEDIA)
+                                .setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .build();
+                        
+                        // Đặt độ ưu tiên cao cho luồng âm thanh (nếu API hỗ trợ)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+                        }
+                    }
+                    
+                    player.prepare();
+                    player.play();
+                    
+                    updateCallbacks();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error preparing media: " + e.getMessage());
+                }
             }
 
             @Override

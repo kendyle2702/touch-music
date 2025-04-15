@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,7 +22,6 @@ import com.example.waterremindervn.R;
 import com.example.waterremindervn.adapter.SongAdapter;
 import com.example.waterremindervn.model.Song;
 import com.example.waterremindervn.repository.MusicRepository;
-import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.List;
 
@@ -29,8 +29,8 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
     
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
-    private TextView tvEmpty;
-    private TextInputEditText etSearch;
+    private TextView tvNoResults;
+    private EditText editSearch;
     private SongAdapter adapter;
     private MusicRepository repository;
     private OnSongActionListener listener;
@@ -62,8 +62,8 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
         
         recyclerView = view.findViewById(R.id.recyclerView);
         progressBar = view.findViewById(R.id.progressBar);
-        tvEmpty = view.findViewById(R.id.tvEmpty);
-        etSearch = view.findViewById(R.id.etSearch);
+        tvNoResults = view.findViewById(R.id.tvNoResults);
+        editSearch = view.findViewById(R.id.editSearch);
         
         repository = new MusicRepository(requireContext());
         adapter = new SongAdapter(this, false);
@@ -74,33 +74,30 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
         setupSearchListener();
         observeSearchResults();
         
-        // Sửa lỗi bàn phím không hiện khi chạm vào EditText
-        etSearch.setOnClickListener(v -> {
-            etSearch.requestFocus();
+        editSearch.setOnClickListener(v -> {
+            editSearch.requestFocus();
             InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(etSearch, InputMethodManager.SHOW_IMPLICIT);
+            imm.showSoftInput(editSearch, InputMethodManager.SHOW_IMPLICIT);
         });
     }
     
     @Override
     public void onResume() {
         super.onResume();
-        // Đặt lại focus và trạng thái của EditText khi tab Search trở thành active
-        etSearch.clearFocus();
+        editSearch.clearFocus();
         InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(editSearch.getWindowToken(), 0);
     }
     
     private void setupSearchListener() {
-        // Đảm bảo EditText sẵn sàng nhận input
-        etSearch.setOnFocusChangeListener((v, hasFocus) -> {
+        editSearch.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(etSearch, InputMethodManager.SHOW_IMPLICIT);
+                imm.showSoftInput(editSearch, InputMethodManager.SHOW_IMPLICIT);
             }
         });
 
-        etSearch.setOnEditorActionListener((v, actionId, event) -> {
+        editSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH || 
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                 performSearch();
@@ -111,14 +108,12 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
     }
     
     private void performSearch() {
-        String query = etSearch.getText().toString().trim();
+        String query = editSearch.getText().toString().trim();
         if (!query.isEmpty()) {
-            // Hide keyboard
             InputMethodManager imm = (InputMethodManager) requireContext()
                     .getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+            imm.hideSoftInputFromWindow(editSearch.getWindowToken(), 0);
             
-            // Show loading and perform search
             showLoading();
             repository.search(query);
         }
@@ -140,19 +135,19 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
     
     private void showLoading() {
         progressBar.setVisibility(View.VISIBLE);
-        tvEmpty.setVisibility(View.GONE);
+        tvNoResults.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
     }
     
     private void showContent() {
         progressBar.setVisibility(View.GONE);
-        tvEmpty.setVisibility(View.GONE);
+        tvNoResults.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
     }
     
     private void showEmpty() {
         progressBar.setVisibility(View.GONE);
-        tvEmpty.setVisibility(View.VISIBLE);
+        tvNoResults.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
     }
     
@@ -173,10 +168,6 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
         }
     }
     
-    /**
-     * Cập nhật trạng thái yêu thích của một bài hát và cập nhật UI
-     * @param updatedSong Bài hát có trạng thái yêu thích đã được cập nhật
-     */
     public void updateSongFavoriteStatus(Song updatedSong) {
         if (adapter == null) return;
         
@@ -184,9 +175,7 @@ public class SearchFragment extends Fragment implements SongAdapter.OnSongClickL
         for (int i = 0; i < currentSongs.size(); i++) {
             Song song = currentSongs.get(i);
             if (song.getId().equals(updatedSong.getId())) {
-                // Cập nhật trạng thái yêu thích
                 song.setFavorite(updatedSong.isFavorite());
-                // Cập nhật UI
                 adapter.notifyItemChanged(i);
             }
         }
